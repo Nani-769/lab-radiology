@@ -2,11 +2,7 @@
   <div class="kpi-card" style="--kpi-color: var(--brand);">
     <div class="kpi-label">Today's Orders</div>
     <div class="kpi-value">{{ kpi.total }}</div>
-    <div class="kpi-meta">
-      <span class="dot"></span>
-      <span class="kpi-trend trend-up">↑12</span>
-      vs yesterday
-    </div>
+    <div class="kpi-meta"><span class="dot"></span><span class="kpi-trend trend-up">↑12</span> vs yesterday</div>
   </div>
   <div class="kpi-card" style="--kpi-color: var(--warning);">
     <div class="kpi-label">Pending Collection</div>
@@ -67,79 +63,26 @@
 
 <div class="workflow-tabs">
   <div class="workflow-tab" [class.active]="activeWorkflow==='order-entry'" (click)="setWorkflow('order-entry')">
-    Order Entry
-    <span class="workflow-tab-pill">{{ pipeline.order }}</span>
+    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg> Order Entry <span class="workflow-tab-pill">{{ pipeline.order }}</span>
   </div>
   <div class="workflow-tab" [class.active]="activeWorkflow==='sample-collection'" (click)="setWorkflow('sample-collection')">
-    Sample Collection
-    <span class="workflow-tab-pill warn-pill">3</span>
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2H7z" clip-rule="evenodd"/></svg> Sample Collection <span class="workflow-tab-pill warn-pill">3</span>
   </div>
   <div class="workflow-tab" [class.active]="activeWorkflow==='processing'" (click)="setWorkflow('processing')">
-    Processing
-    <span class="workflow-tab-pill">{{ pipeline.processing }}</span>
-  </div>
-</div>
-
-<div class="workflow-panel" *ngIf="activeWorkflow==='order-entry'">
-  <div class="subfilter-bar">
-    <span style="font-size:12px;color:var(--text3);font-weight:500;">Show:</span>
-    <button class="subfilter-chip" [class.active]="orderFilter==='all'" (click)="orderFilter='all'"><span class="chip-dot"></span> All Pending</button>
-    <button class="subfilter-chip chip-danger" [class.active]="orderFilter==='stat'" (click)="orderFilter='stat'">STAT / Urgent</button>
-    <button class="subfilter-chip" [class.active]="orderFilter==='routine'" (click)="orderFilter='routine'">Routine</button>
-    <div class="subfilter-bar-right">
-      <button class="act-btn primary" (click)="openNewOrder()">+ New Order</button>
-    </div>
-  </div>
-
-  <div class="table-card" style="border-radius:0 0 var(--radius-lg) var(--radius-lg);border-top:none;margin-top:0;">
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Patient</th>
-          <th>Tests Ordered</th>
-          <th>Priority</th>
-          <th>Ordered By</th>
-          <th>Time</th>
-          <th>Bill Status</th>
-          <th style="text-align:right;">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let o of filterOrders((orders$ | async) || []); trackBy: trackById">
-          <td><span class="sample-id">{{ o.id }}</span></td>
-          <td class="td-primary">{{ o.patient }}<div class="sub">{{ o.demo }}</div></td>
-          <td><div class="test-tags"><span class="test-tag" *ngFor="let t of o.tests">{{ t }}</span></div></td>
-          <td>
-            <span class="priority" [ngClass]="'priority-' + o.priority">
-              <span class="priority-indicator" [ngClass]="'pi-' + o.priority"></span>{{ o.priority | uppercase }}
-            </span>
-          </td>
-          <td>{{ o.orderedBy }}<div class="sub">{{ o.dept }}</div></td>
-          <td class="text-muted mono" style="font-size:12px;">{{ o.time }}<div class="sub">{{ o.timeAgo }}</div></td>
-          <td>
-            <span class="bill-pill" [ngClass]="o.billStatus==='billed' ? 'bill-billed' : 'bill-pending'" (click)="toggleBill(o)">
-              <span class="badge-dot"></span> {{ o.billStatus==='billed' ? 'Billed' : 'Pending' }}
-            </span>
-          </td>
-          <td style="text-align:right;">
-            <div class="actions-cell" style="justify-content:flex-end;">
-              <button class="act-btn" (click)="openPrintLabel(o)">Label</button>
-              <button class="act-btn primary" (click)="openCollect(o.id)">Collect</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg> Processing <span class="workflow-tab-pill">{{ pipeline.processing }}</span>
   </div>
 </div>
 
 <div class="workflow-panel" *ngIf="activeWorkflow==='sample-collection'">
-  <div class="subfilter-bar">
+  <div class="subfilter-bar" style="border-top:none;">
     <button class="subfilter-chip" [class.active]="collFilter==='all'" (click)="collFilter='all'"><span class="chip-dot"></span> All (24)</button>
     <button class="subfilter-chip chip-warning" [class.active]="collFilter==='pending'" (click)="collFilter='pending'"><span class="chip-dot"></span> Yet to Collect (6)</button>
-    <button class="subfilter-chip chip-danger" [class.active]="collFilter==='damaged'" (click)="collFilter='damaged'"><span class="chip-dot"></span> Damaged / Rejected (3)</button>
-    <button class="subfilter-chip chip-success" [class.active]="collFilter==='collected'" (click)="collFilter='collected'"><span class="chip-dot"></span> Collected (15)</button>
+    <div class="subfilter-bar-right">
+      <div class="tbl-search">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+        <input type="text" placeholder="Search samples…" />
+      </div>
+    </div>
   </div>
 
   <div style="border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);padding:14px;background:var(--bg);">
@@ -148,6 +91,7 @@
         <div class="collect-card-header">
           <span class="sample-id">{{ s.id }}</span>
           <span class="priority" [ngClass]="'priority-' + s.priority"><span class="priority-indicator" [ngClass]="'pi-' + s.priority"></span>{{ s.priority | uppercase }}</span>
+          <span class="badge badge-ordered" style="margin-left:auto;"><span class="badge-dot"></span>Awaiting Collection</span>
         </div>
         <div class="collect-card-body">
           <div class="collect-card-info">
@@ -171,72 +115,120 @@
   [draggable]="false" 
   [resizable]="false"
   [closable]="false"
-  styleClass="custom-collect-modal"
+  styleClass="spc-angular-modal"
   appendTo="body">
   
-  <div class="cc-modal-container">
-    
-    <div class="cc-modal-header">
-      <div class="cc-modal-title">
-        <svg viewBox="0 0 20 20" fill="currentColor" class="cc-icon"><path fill-rule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2H7z" clip-rule="evenodd"/></svg>
-        Collect Sample — {{ selectedOrder?.id }}
+  <div class="spc-modal">
+    <div class="spc-mh">
+      <div class="spc-mh-title">Specimen Collection</div>
+      <span class="spc-mode-badge">STANDARD MODE</span>
+      <div class="spc-mh-meta">
+        <div>
+          <span class="spc-mf">Patient</span>
+          <span class="spc-mv">{{ selectedOrder?.patient }} ({{ selectedOrder?.age }}{{ selectedOrder?.sex }})</span>
+        </div>
+        <div>
+          <span class="spc-mf">MRN / Visit</span>
+          <span class="spc-mv">{{ selectedOrder?.mrn }} &middot; {{ selectedOrder?.visit }}</span>
+        </div>
       </div>
-      <button class="cc-modal-close" (click)="showCollectDialog = false">
+      <button class="spc-mh-close" (click)="showCollectDialog = false">
         <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
       </button>
     </div>
 
-    <div class="cc-modal-body">
-      <div class="cc-patient-card">
-        <div class="cc-p-name">{{ selectedOrder?.patient }}</div>
-        <div class="cc-p-demo">{{ selectedOrder?.demo }}</div>
+    <div class="spc-toolbar">
+      <span class="spc-toolbar-label">View by</span>
+      <div class="spc-view-toggle">
+        <button class="spc-vt-btn spc-vt-active">Sample</button>
+        <button class="spc-vt-btn">Test</button>
+        <button class="spc-vt-btn">Tube</button>
       </div>
-
-      <div class="cc-table-wrapper">
-        <table class="cc-table">
-          <thead>
-            <tr>
-              <th style="width: 44px; text-align: center;">
-                <p-checkbox [binary]="true" [(ngModel)]="allTestsSelected" (onChange)="toggleAllTests()"></p-checkbox>
-              </th>
-              <th>TEST NAME</th>
-              <th>SAMPLE TYPE</th>
-              <th>VOLUME</th>
-              <th>STATUS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let test of selectedOrder?.tests">
-              <td style="text-align: center;">
-                <p-checkbox [binary]="true" [(ngModel)]="test.selected"></p-checkbox>
-              </td>
-              <td class="cc-td-bold">{{ test.name }}</td>
-              <td><span class="cc-sample-tag">{{ test.type }}</span></td>
-              <td class="cc-td-muted">{{ test.vol }}</td>
-              <td>
-                <div class="cc-status">
-                  <span class="cc-status-dot"></span>
-                  {{ test.status }}
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="spc-sep"></div>
+      <div class="spc-filter-chips">
+        <div class="spc-chip spc-active-all">All (5)</div>
+        <div class="spc-chip spc-active-blood"><span class="spc-dot spc-dot-blood"></span>Blood (3)</div>
+        <div class="spc-chip spc-active-urine"><span class="spc-dot spc-dot-urine"></span>Urine (2)</div>
+        <div class="spc-chip spc-active-stool"><span class="spc-dot spc-dot-stool"></span>Stool (0)</div>
       </div>
-
-      <div class="cc-notes">
-        <label>COLLECTION NOTES / INSTRUCTIONS</label>
-        <textarea 
-          [(ngModel)]="collectionNotes" 
-          placeholder="Add any collection remarks (e.g., Fasting, difficult draw)...">
-        </textarea>
+      <div class="spc-search-wrap">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px;height:13px;color:#9ca3af;"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+        <input type="text" placeholder="Search tests or tubes...">
       </div>
     </div>
 
-    <div class="cc-modal-footer">
-      <button class="cc-btn-cancel" (click)="showCollectDialog = false">Cancel</button>
-      <button class="cc-btn-process" (click)="processCollection()">Process Collection</button>
+    <div class="spc-summary-bar">
+      <div class="spc-stat"><span class="spc-dot spc-dot-blood"></span> Blood: <strong>1 tube</strong></div>
+      <div class="spc-stat"><span class="spc-dot spc-dot-urine"></span> Urine: <strong>1 container</strong></div>
+      <div class="spc-stat-total">Total Specimens: <strong>2 items</strong></div>
     </div>
-    
+
+    <div class="spc-modal-body">
+      
+      <div class="spc-grp" [class.spc-collapsed]="!grp.open" *ngFor="let grp of spcGroups">
+        <div class="spc-gh" [ngClass]="'spc-gh-' + grp.type" (click)="toggleGroup(grp)">
+          <span class="spc-badge" [ngClass]="grp.badgeClass">{{ grp.badgeLabel }}</span>
+          <span class="spc-tube-tag">{{ grp.tube }}</span>
+          <div class="spc-gh-title">{{ grp.title }}</div>
+          <div class="spc-gh-count" [ngClass]="grp.countClass">{{ grp.testCount }}</div>
+          <span class="spc-coll-badge" [ngClass]="grp.collClass">{{ grp.collStatus }}</span>
+          <svg viewBox="0 0 20 20" fill="currentColor" class="spc-gh-chevron" style="width:14px;height:14px;"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </div>
+        
+        <div class="spc-grp-body">
+          <div class="spc-sid-row">
+            <span class="spc-sid-lbl">Accession ID</span>
+            <input type="text" class="spc-sid-inp" readonly [value]="grp.sampleId">
+            <button class="spc-gen-btn"><svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg> Auto-Generate</button>
+            <button class="spc-print-btn"><svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4zm1-3a1 1 0 110 2 1 1 0 010-2z" clip-rule="evenodd"/></svg> Print Label</button>
+            <button class="spc-copy-prev-btn"><svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Mark Collected</button>
+          </div>
+          
+          <table class="spc-tests-table">
+            <thead>
+              <tr>
+                <th style="width:30px;">
+                  <p-checkbox [binary]="true" (onChange)="selectAllInGroup(grp, $event)"></p-checkbox>
+                </th>
+                <th>Test Description</th>
+                <th>Pre-Analytical</th>
+                <th>Integrity</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of grp.tests">
+                <td><p-checkbox [binary]="true" [(ngModel)]="t.selected"></p-checkbox></td>
+                <td style="font-weight: 500;">{{ t.name }}</td>
+                <td><span style="color:#b45309;font-weight:600;">{{ t.pre }}</span></td>
+                <td>{{ t.int }}</td>
+                <td><span class="spc-status-pill" [ngClass]="t.sClass">{{ t.stat }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="spc-meta-panel">
+            <div class="spc-ff">
+              <span class="spc-fl">Collected By</span>
+              <input type="text" class="spc-fi" [value]="grp.phleb">
+            </div>
+            <div class="spc-ff">
+              <span class="spc-fl">Time</span>
+              <input type="time" class="spc-fi">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="spc-footer">
+      <div class="spc-footer-left">2/5 specimens marked for collection</div>
+      <div class="spc-footer-right">
+        <button class="spc-btn-close" (click)="showCollectDialog = false">Cancel</button>
+        <button class="spc-btn-print-all"><svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4zm1-3a1 1 0 110 2 1 1 0 010-2z" clip-rule="evenodd"/></svg> Print All Labels</button>
+        <button class="spc-btn-save" (click)="processCollection()"><svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 00-1.414-1.414L9 12.586 7.707 10.293z"/><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg> Save &amp; Complete</button>
+      </div>
+    </div>
   </div>
 </p-dialog>
