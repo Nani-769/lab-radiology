@@ -1,0 +1,195 @@
+<ng-container *ngIf="(orders$ | async) as orders">
+
+  <!-- KPI Row -->
+  <div class="kpi-row" style="grid-template-columns:repeat(5,1fr);margin-bottom:18px;">
+    <div class="kpi-card" style="--kpi-color:var(--orange);">
+      <div class="kpi-label">Total External</div>
+      <div class="kpi-value">{{ orders.length }}</div>
+      <div class="kpi-meta"><span class="dot"></span> Today's referrals</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--brand);">
+      <div class="kpi-label">No Lab — Sent Out</div>
+      <div class="kpi-value">7</div>
+      <div class="kpi-meta"><span class="dot"></span> Sample dispatched</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple);">
+      <div class="kpi-label">No Lab — Collected Here</div>
+      <div class="kpi-value">5</div>
+      <div class="kpi-meta"><span class="dot"></span> Sample here, sent out</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warning);">
+      <div class="kpi-label">Awaiting Results</div>
+      <div class="kpi-value">8</div>
+      <div class="kpi-meta"><span class="dot"></span> Pending from ext. lab</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--success);">
+      <div class="kpi-label">Results Received</div>
+      <div class="kpi-value">{{ receivedOrders(orders).length }}</div>
+      <div class="kpi-meta"><span class="dot"></span> Ready for entry</div>
+    </div>
+  </div>
+
+  <!-- Sub-tabs -->
+  <div class="panel-card" style="margin-bottom:0;">
+    <div class="ext-sub-tab-bar">
+      <button class="ext-sub-tab" [class.est-active]="subTab==='a'" (click)="setSubTab('a')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/></svg>
+        Scenario A — No Lab at Hospital
+        <span class="ext-sub-tab-pill">7</span>
+      </button>
+      <button class="ext-sub-tab" [class.est-active]="subTab==='b'" (click)="setSubTab('b')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2H7z" clip-rule="evenodd"/></svg>
+        Scenario B — Sample Collected Here
+        <span class="ext-sub-tab-pill">5</span>
+      </button>
+      <button class="ext-sub-tab" [class.est-active]="subTab==='results'" (click)="setSubTab('results')">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>
+        Result Entry (from External)
+        <span class="ext-sub-tab-pill" style="background:var(--success-bg);color:var(--success);">{{ receivedOrders(orders).length }}</span>
+      </button>
+    </div>
+
+    <!-- SCENARIO A -->
+    <div class="panel-body" style="padding:0;" *ngIf="subTab==='a'">
+      <div style="padding:16px 18px;border-bottom:1px solid var(--border);">
+        <div class="ext-callout co-orange">
+          <div class="ext-callout-icon">🏥</div>
+          <div>
+            <div class="ext-callout-title">Scenario A — Hospital has NO Lab</div>
+            <div class="ext-callout-body">All lab tests must be sent to an external reference lab. Patient may or may not be physically present. Samples collected at external lab. Results received digitally and entered here by hospital staff.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="section-title" style="font-size:13px;">External Orders — Sent Out</div>
+          <div style="display:flex;gap:8px;">
+            <button class="filter-btn" [class.active]="filterA==='All'" (click)="setFilter('A','All')">All</button>
+            <button class="filter-btn" [class.active]="filterA==='Dispatched'" (click)="setFilter('A','Dispatched')">Dispatched</button>
+            <button class="filter-btn" [class.active]="filterA==='Awaiting'" (click)="setFilter('A','Awaiting')">Awaiting Results</button>
+            <button class="filter-btn" [class.active]="filterA==='Received'" (click)="setFilter('A','Received')">Results Received</button>
+            <button class="act-btn primary" (click)="openSendA()">+ Send to External Lab</button>
+          </div>
+        </div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Ref ID</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Patient</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Tests</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">External Lab</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Workflow</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Expected TAT</th>
+            <th style="padding:9px 16px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of scenarioOrders(orders, 'A'); trackBy: trackById">
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><span class="sample-id">{{ o.id }}</span></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;font-weight:600;">{{ o.patient }}<div class="sub text-muted">{{ o.demo }}</div></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><div class="test-tags"><span class="test-tag" *ngFor="let t of o.tests">{{ t }}</span></div></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;">{{ o.externalLab }}</td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><span class="badge" [ngClass]="workflowBadge(o.workflow)"><span class="badge-dot"></span>{{ o.workflow }}</span></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;">{{ o.expectedTat }}</td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;text-align:right;">
+              <button class="act-btn" *ngIf="o.status === 'Received'" (click)="openResultEntry(o)">Enter Result</button>
+              <button class="act-btn">Track</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SCENARIO B -->
+    <div class="panel-body" style="padding:0;" *ngIf="subTab==='b'">
+      <div style="padding:16px 18px;border-bottom:1px solid var(--border);">
+        <div class="ext-callout co-purple">
+          <div class="ext-callout-icon">🧪</div>
+          <div>
+            <div class="ext-callout-title">Scenario B — Sample Collected at Hospital, Sent to External Lab</div>
+            <div class="ext-callout-body">Hospital has phlebotomy facility and collects samples in-house. Samples are then packed and dispatched to the external reference lab for analysis. Results are received back and entered here.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="section-title" style="font-size:13px;">Samples Collected Here — Sent to External</div>
+          <div style="display:flex;gap:8px;">
+            <button class="filter-btn" [class.active]="filterB==='All'" (click)="setFilter('B','All')">All</button>
+            <button class="filter-btn" [class.active]="filterB==='Collected'" (click)="setFilter('B','Collected')">Collected</button>
+            <button class="filter-btn" [class.active]="filterB==='Dispatched'" (click)="setFilter('B','Dispatched')">Dispatched</button>
+            <button class="filter-btn" [class.active]="filterB==='Awaiting'" (click)="setFilter('B','Awaiting')">Awaiting Results</button>
+            <button class="act-btn primary" (click)="openSendB()">+ Log Sample + Send</button>
+          </div>
+        </div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Sample ID</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Patient</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Tests</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Collection</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">External Lab</th>
+            <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Workflow</th>
+            <th style="padding:9px 16px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of scenarioOrders(orders, 'B'); trackBy: trackById">
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><span class="sample-id">{{ o.id }}</span></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;font-weight:600;">{{ o.patient }}<div class="sub text-muted">{{ o.demo }}</div></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><div class="test-tags"><span class="test-tag" *ngFor="let t of o.tests">{{ t }}</span></div></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;" class="mono">{{ o.collection }}</td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;">{{ o.externalLab }}</td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><span class="badge" [ngClass]="workflowBadge(o.workflow)"><span class="badge-dot"></span>{{ o.workflow }}</span></td>
+            <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;text-align:right;">
+              <button class="act-btn">Track</button>
+              <button class="act-btn" *ngIf="o.status === 'Received'" (click)="openResultEntry(o)">Enter Result</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RESULT ENTRY -->
+    <div class="panel-body" *ngIf="subTab==='results'" style="padding:0;">
+      <div class="ext-result-incoming">
+        <div class="eri-icon">📥</div>
+        <div>
+          <div class="eri-title">{{ receivedOrders(orders).length }} External Results Received — Awaiting Entry</div>
+          <div class="eri-desc">Results received digitally or physically from reference labs. Enter them into the system — they go through normal Review &amp; Authorize workflow before dispatch to ward.</div>
+        </div>
+        <div class="eri-actions">
+          <button class="act-btn">📎 Bulk Upload</button>
+          <button class="act-btn primary" (click)="openResultEntry()">Enter Result Manually</button>
+        </div>
+      </div>
+      <div style="padding:14px 18px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Ref ID</th>
+              <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Patient</th>
+              <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Tests</th>
+              <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">External Lab</th>
+              <th style="padding:9px 16px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of receivedOrders(orders); trackBy: trackById">
+              <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><span class="sample-id">{{ o.id }}</span></td>
+              <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;font-weight:600;">{{ o.patient }}</td>
+              <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;"><div class="test-tags"><span class="test-tag" *ngFor="let t of o.tests">{{ t }}</span></div></td>
+              <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;">{{ o.externalLab }}</td>
+              <td style="padding:11px 16px;border-bottom:1px solid var(--border);font-size:12.5px;text-align:right;">
+                <button class="act-btn primary" (click)="openResultEntry(o)">Enter Result</button>
+              </td>
+            </tr>
+            <tr *ngIf="receivedOrders(orders).length === 0">
+              <td colspan="5" style="padding:24px;text-align:center;font-size:12.5px;color:var(--text3);">No external results currently awaiting entry.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</ng-container>

@@ -1,0 +1,61 @@
+<div class="section-header" style="margin-bottom:16px;">
+  <div>
+    <div class="section-title">Quality Control &amp; Analytics Dashboard</div>
+    <div class="section-subtitle">May 2024 · All instruments · Westgard rules applied</div>
+  </div>
+  <button class="act-btn" (click)="exportReport()">Export QC Report</button>
+</div>
+
+<div class="qc-grid">
+
+  <div class="qc-card" *ngFor="let q of qcCards">
+    <div class="qc-card-title">Instrument Performance — {{ q.instrument }}</div>
+
+    <div style="display:flex;gap:16px;margin-bottom:14px;">
+      <div>
+        <div class="qc-value" [style.color]="q.passColor">{{ q.passRate }}%</div>
+        <div style="font-size:11px;color:var(--text3);">QC Pass Rate</div>
+      </div>
+      <div>
+        <div class="qc-value">{{ q.violations }}</div>
+        <div style="font-size:11px;color:var(--text3);">Westgard Violations</div>
+      </div>
+      <div>
+        <div class="qc-value" style="color:var(--brand);">{{ q.samples }}</div>
+        <div style="font-size:11px;color:var(--text3);">Samples Today</div>
+      </div>
+    </div>
+
+    <ng-container *ngFor="let r of q.rows; let last = last">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:4px;">
+          <span>{{ r.label }}</span>
+          <span class="fw600" [style.color]="r.statusColor">{{ r.status === 'In control' ? '✓ In control' : '⚠ 1s Warning' }}</span>
+        </div>
+        <div class="qc-chart-bar"><div class="qc-bar-fill" [style.width.%]="r.pct" [style.background]="r.barColor"></div></div>
+        <div class="qc-legend">
+          <span>{{ r.legend }}</span>
+          <span>{{ r.mean }}</span>
+          <span>{{ r.legendHi }}</span>
+        </div>
+      </div>
+      <hr class="divider" *ngIf="!last" />
+    </ng-container>
+  </div>
+
+  <div class="qc-card" style="grid-column: 1 / -1;">
+    <div class="section-header" style="margin-bottom:14px;">
+      <div class="qc-card-title">Turnaround Time Performance — May 2024</div>
+    </div>
+    <div class="tat-grid">
+      <div class="tat-item" *ngFor="let t of tatItems">
+        <div class="tat-label">{{ t.label }}</div>
+        <div class="tat-chart">
+          <div class="tat-bar" *ngFor="let b of t.bars" [style.height.%]="b.h" [style.background]="b.color" [style.opacity]="b.opacity || 1"></div>
+        </div>
+        <div class="tat-value" [style.color]="t.valueColor">{{ t.value }}</div>
+        <div class="tat-target">{{ t.target }}</div>
+      </div>
+    </div>
+  </div>
+</div>

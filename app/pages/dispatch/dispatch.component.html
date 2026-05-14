@@ -1,0 +1,116 @@
+<ng-container *ngIf="(records$ | async) as records">
+
+  <!-- KPI Strip -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+    <div class="kpi-card" style="--kpi-color:var(--success);">
+      <div class="kpi-label">Authorized Today</div>
+      <div class="kpi-value">{{ records.length }}</div>
+      <div class="kpi-meta"><span class="dot"></span>Reports released by pathologist</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--warning);">
+      <div class="kpi-label">Pending Dispatch</div>
+      <div class="kpi-value">{{ countPending(records) }}</div>
+      <div class="kpi-meta"><span class="dot"></span>Awaiting print &amp; delivery</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--brand);">
+      <div class="kpi-label">Dispatched</div>
+      <div class="kpi-value">{{ countDispatched(records) }}</div>
+      <div class="kpi-meta"><span class="dot"></span>Delivered to ward/patient</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:var(--purple);">
+      <div class="kpi-label">Avg Dispatch Time</div>
+      <div class="kpi-value">4.1m</div>
+      <div class="kpi-meta"><span class="dot"></span>From authorization to delivery</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px;">
+      <svg viewBox="0 0 20 20" fill="currentColor" style="width:15px;height:15px;color:var(--brand);"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3z"/></svg>
+      Authorized Reports — Ready for Dispatch
+    </div>
+    <span style="background:var(--warning-bg);color:var(--warning);font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;">{{ countPending(records) }} pending</span>
+    <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+      <div class="tbl-search">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+        <input type="text" placeholder="Search patient, MR#, or test…" [(ngModel)]="query" style="width:220px;" />
+      </div>
+      <div style="display:flex;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <button class="re-filter-btn" [class.active]="filter==='all'" (click)="filter='all'">All</button>
+        <button class="re-filter-btn" [class.active]="filter==='pending'" (click)="filter='pending'"><span style="width:6px;height:6px;border-radius:50%;background:var(--warning);display:inline-block;margin-right:4px;"></span>Pending</button>
+        <button class="re-filter-btn" [class.active]="filter==='dispatched'" (click)="filter='dispatched'"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;margin-right:4px;"></span>Dispatched</button>
+      </div>
+      <button class="act-btn primary" (click)="printAllPending(records)">Print All Pending</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+    <table class="re-grid-table">
+      <thead>
+        <tr>
+          <th style="width:40px;padding-left:16px;">
+            <input type="checkbox"
+                   [checked]="filtered(records).length > 0 && selected.size === filtered(records).length"
+                   (change)="toggleSelectAll(filtered(records))"
+                   style="cursor:pointer;accent-color:var(--brand);" />
+          </th>
+          <th style="width:130px;">Sample / Report ID</th>
+          <th>Patient</th>
+          <th style="width:200px;">Test(s)</th>
+          <th style="width:100px;">Priority</th>
+          <th style="width:90px;">Flags</th>
+          <th style="width:110px;">Authorized By</th>
+          <th style="width:90px;">Auth. Time</th>
+          <th style="width:115px;">Status</th>
+          <th style="width:140px;text-align:center;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of filtered(records); trackBy: trackById">
+          <td style="padding-left:16px;">
+            <input type="checkbox"
+                   [checked]="selected.has(r.id)"
+                   (change)="toggleSelect(r.id)"
+                   style="cursor:pointer;accent-color:var(--brand);" />
+          </td>
+          <td><span class="sample-id">{{ r.id }}</span></td>
+          <td class="td-primary">{{ r.patient }}<div class="sub">{{ r.demo }}</div></td>
+          <td>{{ r.tests }}</td>
+          <td><span class="priority" [ngClass]="'priority-' + r.priority"><span class="priority-indicator" [ngClass]="'pi-' + r.priority"></span>{{ r.priority | uppercase }}</span></td>
+          <td><span class="flag-pill" [ngClass]="flagPillClass(r.flags)">{{ r.flags }}</span></td>
+          <td style="font-size:11.5px;">{{ r.authBy }}</td>
+          <td class="mono" style="font-size:11.5px;">{{ r.authTime }}</td>
+          <td>
+            <span class="badge" [ngClass]="r.dispatched ? 'badge-collected' : 'badge-processing'">
+              <span class="badge-dot"></span>{{ r.dispatched ? 'Dispatched' : 'Pending' }}
+            </span>
+          </td>
+          <td style="text-align:center;">
+            <div class="actions-cell" style="justify-content:center;">
+              <button class="act-btn" (click)="openReport(r)">Preview</button>
+              <button class="act-btn primary" *ngIf="!r.dispatched" (click)="markSingle(r)">Dispatch</button>
+              <button class="act-btn" *ngIf="r.dispatched">Re-print</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filtered(records).length === 0" style="padding:48px 0;text-align:center;">
+      <div style="font-size:32px;margin-bottom:10px;">✓</div>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">All reports dispatched</div>
+      <div style="font-size:12px;color:var(--text3);">No pending reports remain. Great work!</div>
+    </div>
+
+    <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);">
+      <span style="font-size:12px;color:var(--text3);">Showing {{ filtered(records).length }} of {{ records.length }} authorized reports</span>
+      <div style="display:flex;gap:8px;align-items:center;" *ngIf="selected.size > 0">
+        <span style="font-size:11.5px;color:var(--text3);">{{ selected.size }} selected</span>
+        <button class="act-btn" (click)="bulkPrint()">Print (Selected)</button>
+      </div>
+    </div>
+  </div>
+
+</ng-container>

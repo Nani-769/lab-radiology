@@ -1,0 +1,159 @@
+<ng-container *ngIf="(items$ | async) as items">
+
+  <!-- VIEW A: Grid -->
+  <div *ngIf="view==='grid'">
+
+    <!-- KPI Strip -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+      <div class="kpi-card" style="--kpi-color:var(--danger);">
+        <div class="kpi-label">Critical Values</div>
+        <div class="kpi-value">{{ countCritical(items) }}</div>
+        <div class="kpi-meta"><span class="dot"></span>Verbal notification pending</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--warning);">
+        <div class="kpi-label">Pending Review</div>
+        <div class="kpi-value">{{ countPending(items) }}</div>
+        <div class="kpi-meta"><span class="dot"></span>Awaiting pathologist sign-off</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--success);">
+        <div class="kpi-label">Authorized Today</div>
+        <div class="kpi-value">18</div>
+        <div class="kpi-meta"><span class="dot"></span>Reports released</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--brand);">
+        <div class="kpi-label">Avg Review Time</div>
+        <div class="kpi-value">6.2m</div>
+        <div class="kpi-meta"><span class="dot"></span>Per report today</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px;">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:15px;height:15px;color:var(--brand);"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        Pending Review &amp; Authorization
+      </div>
+      <span style="background:var(--danger-bg);color:var(--danger);font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;">{{ items.length }} records</span>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+        <div class="tbl-search">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+          <input type="text" placeholder="Search patient or sample ID…" [(ngModel)]="query" style="width:220px;" />
+        </div>
+        <div style="display:flex;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+          <button class="re-filter-btn" [class.active]="filter==='all'" (click)="filter='all'">All</button>
+          <button class="re-filter-btn" [class.active]="filter==='critical'" (click)="filter='critical'"><span style="width:6px;height:6px;border-radius:50%;background:var(--danger);display:inline-block;margin-right:4px;"></span>Critical</button>
+          <button class="re-filter-btn" [class.active]="filter==='pending'" (click)="filter='pending'"><span style="width:6px;height:6px;border-radius:50%;background:var(--warning);display:inline-block;margin-right:4px;"></span>Pending</button>
+        </div>
+        <button class="act-btn" (click)="batchAuthorizeRoutine(items)">Batch Authorize Routine</button>
+      </div>
+    </div>
+
+    <!-- Grid Table -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">
+      <table class="re-grid-table">
+        <thead>
+          <tr>
+            <th style="width:140px;">Sample ID</th>
+            <th>Patient</th>
+            <th style="width:210px;">Test(s)</th>
+            <th style="width:100px;">Priority</th>
+            <th style="width:120px;">Status</th>
+            <th style="width:100px;">Abnormal</th>
+            <th style="width:110px;">Technician</th>
+            <th style="width:90px;">Location</th>
+            <th style="width:100px;text-align:center;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let i of filtered(items); trackBy: trackById" (click)="openDetail(i, filtered(items))">
+            <td><span class="sample-id">{{ i.sampleId }}</span></td>
+            <td class="td-primary">{{ i.patient }}<div class="sub">{{ i.demo }}</div></td>
+            <td>{{ i.tests }}</td>
+            <td><span class="priority" [ngClass]="'priority-' + i.priority"><span class="priority-indicator" [ngClass]="'pi-' + i.priority"></span>{{ i.priority | uppercase }}</span></td>
+            <td><span class="badge" [ngClass]="statusBadge(i.status)"><span class="badge-dot"></span>{{ i.status === 'critical' ? 'Critical' : 'Pending Review' }}</span></td>
+            <td>
+              <span class="flag-pill" *ngFor="let f of i.flags" [ngClass]="flagPillClass(f)" style="margin-right:3px;">{{ f }}</span>
+            </td>
+            <td style="font-size:11.5px;">{{ i.technician }}</td>
+            <td class="text-muted" style="font-size:11.5px;">{{ i.location }}</td>
+            <td style="text-align:center;"><button class="act-btn primary">Review</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VIEW B: Detail -->
+  <div *ngIf="view==='detail' && selected">
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <button class="act-btn" (click)="closeDetail()">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:13px;height:13px;"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+        Back to List
+      </button>
+      <div style="font-size:12px;color:var(--text3);">
+        Review &amp; Authorize
+        <span style="color:var(--text4);margin:0 4px;">/</span>
+        <span style="color:var(--text);font-weight:600;">{{ selected.sampleId }} — {{ selected.patient }}</span>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px;">
+        <button class="act-btn" (click)="navDetail(-1, filtered(items))">‹ Prev</button>
+        <button class="act-btn" (click)="navDetail(1, filtered(items))">Next ›</button>
+        <span style="font-size:11.5px;color:var(--text3);padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);">{{ selectedIndex + 1 }} / {{ filtered(items).length }}</span>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-bottom:14px;">
+      <div>
+        <div class="section-title">Pathologist Review — {{ selected.patient }}</div>
+        <div class="section-subtitle">{{ selected.sampleId }} · {{ selected.tests }} · {{ selected.location }}</div>
+      </div>
+      <span class="badge" [ngClass]="statusBadge(selected.status)" style="font-size:12px;padding:5px 12px;"><span class="badge-dot"></span>{{ selected.status === 'critical' ? 'Critical Value' : 'Pending Review' }}</span>
+    </div>
+
+    <div class="review-card">
+      <div class="review-card-header">
+        <span class="badge" [ngClass]="statusBadge(selected.status)"><span class="badge-dot"></span>{{ selected.status === 'critical' ? 'Critical' : 'Pending Review' }}</span>
+        <span class="sample-id">{{ selected.sampleId }}</span>
+        <span style="font-size:13px;font-weight:600;color:var(--text);">{{ selected.patient }}</span>
+        <span style="font-size:12px;color:var(--text3);">{{ selected.demo }}</span>
+        <span class="text-muted" style="font-size:12px;margin-left:auto;">{{ selected.tests }}</span>
+      </div>
+      <div class="review-card-body">
+
+        <div class="critical-banner" *ngIf="selected.status==='critical'">
+          <div class="critical-banner-icon">⚠️</div>
+          <div>
+            <div class="critical-banner-title">Critical Value — Notification Logged</div>
+            <div class="critical-banner-desc">{{ selected.comment }}</div>
+          </div>
+        </div>
+
+        <table class="result-params-table">
+          <thead>
+            <tr><th>Parameter</th><th style="text-align:right;">Result</th><th style="text-align:center;">Flag</th><th>Reference</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of selected.params">
+              <td><div class="param-name">{{ p.name }}</div><div class="param-unit">{{ p.unit }}</div></td>
+              <td style="text-align:right;" class="mono fw600">{{ p.val }}</td>
+              <td style="text-align:center;"><span class="flag-pill" [ngClass]="'flag-' + (p.flag === 'CRIT' ? 'C' : p.flag === 'ABN' ? 'H' : p.flag)">{{ p.flag }}</span></td>
+              <td class="param-ref">{{ p.ref }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:12px;">
+          <label class="form-label">Pathologist Comment</label>
+          <textarea class="form-textarea" placeholder="Add interpretation, comments, or clinical correlation…" [value]="selected.comment"></textarea>
+        </div>
+      </div>
+      <div class="review-card-footer">
+        <button class="act-btn" (click)="returnForRevision(selected)">Return for Revision</button>
+        <button class="act-btn danger" *ngIf="selected.status==='critical'" (click)="holdRelease(selected)">Hold Release</button>
+        <button class="act-btn success" (click)="authorize(selected)">Authorize &amp; Release</button>
+      </div>
+    </div>
+  </div>
+
+</ng-container>

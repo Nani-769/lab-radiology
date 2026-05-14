@@ -1,0 +1,292 @@
+<div class="rcs" [class.open]="workspaceOpen">
+  <div class="rcs-hd" (click)="toggleWorkspace()">
+    <div class="rcs-hd-left">
+      <div class="rcs-icon" style="background:var(--brand-light);color:var(--brand);">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm8 8v2h1v-2h-1zm-2-2H7v4h6v-4zm2 0h1V9h-1v2zm1-4V5h-1v2h1zM5 5H4v2h1V5zM4 9h1v2H4V9zm1 4H4v2h1v-2z" clip-rule="evenodd"/></svg>
+      </div>
+      <div>
+        <div class="rcs-title">Radiology Workspace</div>
+        <div class="rcs-sub">Pipeline overview · 47 studies today · Avg TAT 4.2h</div>
+      </div>
+    </div>
+    <div class="rcs-hd-right">
+      <div class="rcs-kpi-strip">
+        <div class="rcs-kpip" style="--kc:#0277bd;"><strong>21</strong> X-Ray</div>
+        <div class="rcs-kpip" style="--kc:var(--purple);"><strong>14</strong> CT</div>
+        <div class="rcs-kpip" style="--kc:var(--teal);"><strong>8</strong> MRI</div>
+        <div class="rcs-kpip" style="--kc:var(--orange);"><strong>4</strong> USG</div>
+        <div class="rcs-kpip" style="--kc:var(--success);"><strong>2</strong> NucMed</div>
+      </div>
+      <button class="act-btn primary" style="font-size:11px;" (click)="$event.stopPropagation(); openDicom()">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm8 8v2h1v-2h-1zm-2-2H7v4h6v-4zm2 0h1V9h-1v2zm1-4V5h-1v2h1zM5 5H4v2h1V5zM4 9h1v2H4V9zm1 4H4v2h1v-2z" clip-rule="evenodd"/></svg>
+        DICOM Viewer
+      </button>
+      <div class="rcs-chevron">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="rcs-body">
+    <div class="rad-kpi-inner">
+      <div class="rki-card" style="--kc:var(--brand);">
+        <div class="rki-lbl">Today's Studies</div>
+        <div class="rki-val">47</div>
+        <div class="rki-meta"><span class="kpi-trend trend-up">↑5</span> vs yesterday</div>
+      </div>
+      <div class="rki-card" style="--kc:#0277bd;">
+        <div class="rki-lbl">X-Ray</div>
+        <div class="rki-val">21</div>
+        <div class="rki-meta">3 queued · 2 rooms active</div>
+      </div>
+      <div class="rki-card" style="--kc:var(--purple);">
+        <div class="rki-lbl">CT Scan</div>
+        <div class="rki-val">14</div>
+        <div class="rki-meta">2 scanning · 1 contrast</div>
+      </div>
+      <div class="rki-card" style="--kc:var(--teal);">
+        <div class="rki-lbl">MRI</div>
+        <div class="rki-val">8</div>
+        <div class="rki-meta">1 scanning · 1 urgent</div>
+      </div>
+      <div class="rki-card" style="--kc:var(--orange);">
+        <div class="rki-lbl">Ultrasound</div>
+        <div class="rki-val">4</div>
+        <div class="rki-meta">1 in progress</div>
+      </div>
+      <div class="rki-card" style="--kc:var(--danger);">
+        <div class="rki-lbl">Avg TAT</div>
+        <div class="rki-val" style="color:var(--danger);">4.2h</div>
+        <div class="rki-meta"><span class="kpi-trend trend-down">↑ Over 4h target</span></div>
+      </div>
+    </div>
+
+    <div class="rad-pipe-inner">
+      <div class="rpis" [class.rpis-active]="stageFilter === 'queued'" (click)="setStageFilter('queued')">
+        <div class="rpis-dot" style="background:#3b82f6;"></div>
+        <div class="rpis-count">9</div>
+        <div class="rpis-lbl">Queued</div>
+        <div class="rpis-sub">Awaiting slot</div>
+      </div>
+      <div class="rpis-arrow">›</div>
+      <div class="rpis" [class.rpis-active]="stageFilter === 'scheduled'" (click)="setStageFilter('scheduled')">
+        <div class="rpis-dot" style="background:var(--info);"></div>
+        <div class="rpis-count">11</div>
+        <div class="rpis-lbl">Scheduled</div>
+        <div class="rpis-sub">Slot confirmed</div>
+      </div>
+      <div class="rpis-arrow">›</div>
+      <div class="rpis" [class.rpis-active]="stageFilter === 'checkin'" (click)="setStageFilter('checkin')">
+        <div class="rpis-dot" style="background:var(--warning);"></div>
+        <div class="rpis-count">6</div>
+        <div class="rpis-lbl">Check-in</div>
+        <div class="rpis-sub">Patient arrived</div>
+      </div>
+      <div class="rpis-arrow">›</div>
+      <div class="rpis" [class.rpis-active]="stageFilter === 'imaging'" (click)="setStageFilter('imaging')">
+        <div class="rpis-dot" style="background:var(--purple);"></div>
+        <div class="rpis-count">8</div>
+        <div class="rpis-lbl">Imaging</div>
+        <div class="rpis-sub">On machine</div>
+      </div>
+      <div class="rpis-arrow">›</div>
+      <div class="rpis" [class.rpis-active]="stageFilter === 'reporting'" (click)="setStageFilter('reporting')">
+        <div class="rpis-dot" style="background:var(--info);"></div>
+        <div class="rpis-count">7</div>
+        <div class="rpis-lbl">Reporting</div>
+        <div class="rpis-sub">Radiologist</div>
+      </div>
+      <div class="rpis-arrow">›</div>
+      <div class="rpis" [class.rpis-active]="stageFilter === 'authorized'" (click)="setStageFilter('authorized')">
+        <div class="rpis-dot" style="background:var(--success);"></div>
+        <div class="rpis-count">6</div>
+        <div class="rpis-lbl">Authorized</div>
+        <div class="rpis-sub">Released</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rcs" [class.open]="machinesOpen">
+  <div class="rcs-hd" (click)="toggleMachines()">
+    <div class="rcs-hd-left">
+      <div class="rcs-icon" style="background:var(--success-bg);color:var(--success);">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+      </div>
+      <div>
+        <div class="rcs-title">Machine Status — All Modalities</div>
+        <div class="rcs-sub">Live · Updates dynamically when rooms are assigned</div>
+      </div>
+    </div>
+    <div class="rcs-hd-right">
+      <span class="msc" style="background:var(--danger-bg);color:var(--danger);"><span class="msc-dot" style="background:var(--danger);"></span>5 Busy</span>
+      <span class="msc" style="background:var(--success-bg);color:var(--success);"><span class="msc-dot" style="background:var(--success);"></span>3 Available</span>
+      <span class="msc" style="background:var(--warning-bg);color:var(--warning);"><span class="msc-dot" style="background:var(--warning);"></span>1 Maint.</span>
+      <div class="rcs-chevron">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="rcs-body">
+    <div class="machine-grid-inner">
+      <div class="mgc" *ngFor="let col of columns" [style.--mc]="col.color">
+        <div class="mgc-hd">
+          <span class="mgc-icon">
+            <ng-container [ngSwitch]="col.key">
+              <span *ngSwitchCase="'xray'">🩻</span>
+              <span *ngSwitchCase="'ct'">🔬</span>
+              <span *ngSwitchCase="'mri'">🧲</span>
+              <span *ngSwitchCase="'usg'">🔊</span>
+              <span *ngSwitchCase="'nuc'">⚛️</span>
+            </ng-container>
+          </span>
+          <div>
+            <div class="mgc-name">{{ col.name }}</div>
+            <div class="mgc-sub">{{ machinesFor(col.key, (machines$ | async)).length }} rooms</div>
+          </div>
+        </div>
+        <div *ngFor="let m of machinesFor(col.key, (machines$ | async))" class="mgc-row">
+          <div>
+            <div style="font-weight:600;">{{ m.name }}</div>
+            <div style="font-size:10px;color:var(--text3);" *ngIf="m.patient">{{ m.patient }} <span *ngIf="m.eta">· ETA {{ m.eta }}</span></div>
+          </div>
+          <span class="mgc-badge" [ngClass]="machineStateClass(m.state)">{{ machineStateLabel(m.state) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rad-board-outer" style="margin-top:14px;">
+  <div class="rbt">
+    <div class="rbt-title">All Studies</div>
+    <div class="rbt-count">47</div>
+    <div class="rbt-sep"></div>
+    
+    <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text3);margin-right:12px;">
+      <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px;color:var(--warning);"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zm0 4a1 1 0 000 2h5a1 1 0 000-2H3zm0 4a1 1 0 000 2h4a1 1 0 000-2H3zM15 7a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 12.586V7z" clip-rule="evenodd"/></svg>
+      Check-in first &rarr; then by queue #
+    </div>
+
+    <div class="pfg">
+      <button class="pfb" [class.pfb-active]="priorityFilter==='all'" (click)="setPriorityFilter('all')">All</button>
+      <button class="pfb pfbs" [class.pfb-active]="priorityFilter==='stat'" (click)="setPriorityFilter('stat')"><span class="pfb-dot"></span> STAT</button>
+      <button class="pfb pfbu" [class.pfb-active]="priorityFilter==='urgent'" (click)="setPriorityFilter('urgent')"><span class="pfb-dot"></span> Urgent</button>
+      <button class="pfb pfbr" [class.pfb-active]="priorityFilter==='routine'" (click)="setPriorityFilter('routine')"><span class="pfb-dot"></span> Routine</button>
+    </div>
+
+    <div class="rbt-search" style="margin-left:8px;">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+      <input type="text" placeholder="Search patients...">
+    </div>
+  </div>
+
+  <div class="xb-scroll">
+    <div class="xb-grid">
+      
+      <div class="xbc" *ngFor="let col of columns; trackBy: trackByKey" [style.--col-ac]="col.color" [class.xbc-collapsed]="collapsedCols[col.key]">
+        
+        <button class="xbc-collapse-btn" [title]="'Collapse ' + col.name" (click)="toggleColumn(col.key); $event.stopPropagation();">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+
+        <div class="xbc-hd" (click)="toggleColumn(col.key)">
+          <div class="xbc-title-row">
+            <div class="xbc-icon" [style.background]="col.iconBg">
+              <ng-container [ngSwitch]="col.key">
+                <span *ngSwitchCase="'xray'">🩻</span>
+                <span *ngSwitchCase="'ct'">🔬</span>
+                <span *ngSwitchCase="'mri'">🧲</span>
+                <span *ngSwitchCase="'usg'">🔊</span>
+                <span *ngSwitchCase="'nuc'">⚛️</span>
+              </ng-container>
+            </div>
+            <div class="xbc-nwrap">
+              <div class="xbc-name">{{ col.name }}</div>
+              <div class="xbc-equip">{{ col.equip }}</div>
+              <div class="xbc-collapsed-count">{{ col.totalKey }}</div>
+            </div>
+            <button class="xbc-sched" (click)="$event.stopPropagation(); openScheduleModal(col.key)">+ Schedule</button>
+          </div>
+          
+          <div class="xbc-stats">
+            <span class="xbcs" *ngFor="let s of col.stats" [ngClass]="s.kind ? 'xbcs-' + s.kind : ''">
+              <strong>{{ s.count }}</strong> {{ s.label }}
+            </span>
+          </div>
+
+          <div class="xbc-mach" *ngIf="machinesFor(col.key, (machines$ | async)).length > 0">
+            <div class="xbm-row" *ngFor="let m of machinesFor(col.key, (machines$ | async))">
+              <span class="xbm-dot" [ngClass]="m.state === 'busy' ? 'busy' : m.state === 'available' ? 'avail' : 'maint'"></span>
+              <span class="xbm-room">{{ m.name }} <span *ngIf="m.patient" style="color:var(--text3);">· {{ m.patient }}</span></span>
+              <span class="xbm-st" [ngClass]="m.state === 'busy' ? 'busy' : m.state === 'available' ? 'avail' : 'maint'">{{ machineStateLabel(m.state) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="xbc-body" *ngIf="!collapsedCols[col.key]">
+          
+          <div class="epc" *ngFor="let p of patientsFor(col.key, (patients$ | async)); trackBy: trackById" [ngClass]="getEpcClass(p)">
+            <div class="epc-stripe" [style.background]="getStripeColor(p)"></div>
+            <div class="epc-inner">
+              <div class="epc-top">
+                <span class="epc-ris">{{ p.ris || p.id }}</span>
+                <div class="epc-stage-wrap">
+                  <span *ngIf="p.queueNo" class="epc-qnum" [ngClass]="'qn-' + p.priority">{{ p.queueNo }}</span>
+                  <span class="badge" [ngClass]="stageBadgeClass(p.stage)"><span class="badge-dot"></span>{{ stageLabel(p.stage) }}</span>
+                </div>
+              </div>
+              
+              <div class="epc-name">{{ p.name }}</div>
+              <div class="epc-demo">{{ p.demo || (p.age + p.sex + ' · ' + p.mrn) }}</div>
+              <div class="epc-study">{{ p.study || p.test }}</div>
+              
+              <div class="epc-prog" *ngIf="p.stage === 'imaging'">
+                <div class="epc-prog-fill" [style.width.%]="p.progress || 50" [style.background]="col.color"></div>
+              </div>
+              
+              <div class="epc-foot">
+                <span>
+                  <span class="epc-pri" [ngClass]="'epc-' + p.priority">{{ p.priority | uppercase }}</span>
+                  <span *ngIf="p.stage === 'imaging'" class="epc-live" style="margin-left:4px;">
+                     <span class="epc-live-dot"></span> LIVE
+                  </span>
+                </span>
+                <span class="epc-time">{{ p.time || p.scheduledTime || '09:00' }}</span>
+              </div>
+              
+              <div class="epc-action" *ngIf="p.stage === 'checkin'">
+                <button class="epc-checkin-btn" (click)="openRoomModal(col.key, p.id); $event.stopPropagation()">
+                  <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px;"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                  Assign Room &amp; Check-In
+                </button>
+              </div>
+
+              <div class="epc-action" *ngIf="p.stage === 'queued'">
+                <button class="epc-btn-checkin-queue" (click)="openRoomModal(col.key, p.id); $event.stopPropagation()">
+                  <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px;"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg> Check-In Now
+                </button>
+              </div>
+
+              <div class="epc-action" *ngIf="p.stage === 'scheduled'">
+                <button class="epc-btn-queue" (click)="$event.stopPropagation(); generateQueueToken(p)">
+                  <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px;"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg> Generate Queue Token
+                </button>
+              </div>
+
+              <div class="epc-action" *ngIf="p.stage === 'imaging'">
+                <button class="epc-btn-checkout" (click)="openCheckout(p.id); $event.stopPropagation()">
+                  <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px;"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg> Checkout &amp; Vacate {{ p.room || 'Room' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="patientsFor(col.key, (patients$ | async)).length === 0" style="text-align:center;padding:20px;font-size:11px;color:var(--text3);">
+            No patients matching filter
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

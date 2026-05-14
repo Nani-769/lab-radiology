@@ -1,0 +1,242 @@
+<div class="kpi-row">
+  <div class="kpi-card" style="--kpi-color: var(--brand);">
+    <div class="kpi-label">Today's Orders</div>
+    <div class="kpi-value">{{ kpi.total }}</div>
+    <div class="kpi-meta">
+      <span class="dot"></span>
+      <span class="kpi-trend trend-up">↑12</span>
+      vs yesterday
+    </div>
+  </div>
+  <div class="kpi-card" style="--kpi-color: var(--warning);">
+    <div class="kpi-label">Pending Collection</div>
+    <div class="kpi-value">{{ kpi.pending }}</div>
+    <div class="kpi-meta"><span class="dot"></span> 5 STAT priority</div>
+  </div>
+  <div class="kpi-card" style="--kpi-color: var(--purple);">
+    <div class="kpi-label">Processing</div>
+    <div class="kpi-value">{{ kpi.processing }}</div>
+    <div class="kpi-meta"><span class="dot"></span> Analyzers running</div>
+  </div>
+  <div class="kpi-card" style="--kpi-color: var(--success);">
+    <div class="kpi-label">Results Ready</div>
+    <div class="kpi-value">{{ kpi.ready }}</div>
+    <div class="kpi-meta"><span class="dot"></span> 7 pending dispatch</div>
+  </div>
+  <div class="kpi-card" style="--kpi-color: var(--teal);">
+    <div class="kpi-label">TAT Average</div>
+    <div class="kpi-value">{{ kpi.tat }}</div>
+    <div class="kpi-meta"><span class="dot"></span><span class="kpi-trend trend-up">↑ On target</span></div>
+  </div>
+</div>
+
+<div class="section-header" style="margin-bottom:12px;">
+  <div>
+    <div class="section-title">Sample Workflow Pipeline</div>
+    <div class="section-subtitle">Click any stage to jump to that workflow view</div>
+  </div>
+  <a class="section-link" href="javascript:void(0)">View Timeline →</a>
+</div>
+
+<div class="pipeline" style="margin-bottom:20px;">
+  <div class="pipeline-step" [class.active]="activeWorkflow==='order-entry'" (click)="setWorkflow('order-entry')">
+    <div class="step-icon" style="background:#e8f0fe;color:var(--brand);">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>
+    </div>
+    <div class="step-label">Order Entry</div>
+    <div class="step-count">{{ pipeline.order }}</div>
+    <div class="step-sub">Awaiting collection</div>
+  </div>
+  <div class="pipeline-step" [class.active]="activeWorkflow==='sample-collection'" (click)="setWorkflow('sample-collection')">
+    <div class="step-icon" style="background:var(--purple-bg);color:var(--purple);">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2H7z" clip-rule="evenodd"/></svg>
+    </div>
+    <div class="step-label">Sample Collection</div>
+    <div class="step-count">{{ pipeline.collection }}</div>
+    <div class="step-sub">3 damaged · 6 pending</div>
+  </div>
+  <div class="pipeline-step" [class.active]="activeWorkflow==='processing'" (click)="setWorkflow('processing')">
+    <div class="step-icon" style="background:var(--warning-bg);color:var(--warning);">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+    </div>
+    <div class="step-label">Processing</div>
+    <div class="step-count">{{ pipeline.processing }}</div>
+    <div class="step-sub">On analyzer</div>
+  </div>
+</div>
+
+<div class="workflow-tabs">
+  <div class="workflow-tab" [class.active]="activeWorkflow==='order-entry'" (click)="setWorkflow('order-entry')">
+    Order Entry
+    <span class="workflow-tab-pill">{{ pipeline.order }}</span>
+  </div>
+  <div class="workflow-tab" [class.active]="activeWorkflow==='sample-collection'" (click)="setWorkflow('sample-collection')">
+    Sample Collection
+    <span class="workflow-tab-pill warn-pill">3</span>
+  </div>
+  <div class="workflow-tab" [class.active]="activeWorkflow==='processing'" (click)="setWorkflow('processing')">
+    Processing
+    <span class="workflow-tab-pill">{{ pipeline.processing }}</span>
+  </div>
+</div>
+
+<div class="workflow-panel" *ngIf="activeWorkflow==='order-entry'">
+  <div class="subfilter-bar">
+    <span style="font-size:12px;color:var(--text3);font-weight:500;">Show:</span>
+    <button class="subfilter-chip" [class.active]="orderFilter==='all'" (click)="orderFilter='all'"><span class="chip-dot"></span> All Pending</button>
+    <button class="subfilter-chip chip-danger" [class.active]="orderFilter==='stat'" (click)="orderFilter='stat'">STAT / Urgent</button>
+    <button class="subfilter-chip" [class.active]="orderFilter==='routine'" (click)="orderFilter='routine'">Routine</button>
+    <div class="subfilter-bar-right">
+      <button class="act-btn primary" (click)="openNewOrder()">+ New Order</button>
+    </div>
+  </div>
+
+  <div class="table-card" style="border-radius:0 0 var(--radius-lg) var(--radius-lg);border-top:none;margin-top:0;">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Patient</th>
+          <th>Tests Ordered</th>
+          <th>Priority</th>
+          <th>Ordered By</th>
+          <th>Time</th>
+          <th>Bill Status</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of filterOrders((orders$ | async) || []); trackBy: trackById">
+          <td><span class="sample-id">{{ o.id }}</span></td>
+          <td class="td-primary">{{ o.patient }}<div class="sub">{{ o.demo }}</div></td>
+          <td><div class="test-tags"><span class="test-tag" *ngFor="let t of o.tests">{{ t }}</span></div></td>
+          <td>
+            <span class="priority" [ngClass]="'priority-' + o.priority">
+              <span class="priority-indicator" [ngClass]="'pi-' + o.priority"></span>{{ o.priority | uppercase }}
+            </span>
+          </td>
+          <td>{{ o.orderedBy }}<div class="sub">{{ o.dept }}</div></td>
+          <td class="text-muted mono" style="font-size:12px;">{{ o.time }}<div class="sub">{{ o.timeAgo }}</div></td>
+          <td>
+            <span class="bill-pill" [ngClass]="o.billStatus==='billed' ? 'bill-billed' : 'bill-pending'" (click)="toggleBill(o)">
+              <span class="badge-dot"></span> {{ o.billStatus==='billed' ? 'Billed' : 'Pending' }}
+            </span>
+          </td>
+          <td style="text-align:right;">
+            <div class="actions-cell" style="justify-content:flex-end;">
+              <button class="act-btn" (click)="openPrintLabel(o)">Label</button>
+              <button class="act-btn primary" (click)="openCollect(o.id)">Collect</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="workflow-panel" *ngIf="activeWorkflow==='sample-collection'">
+  <div class="subfilter-bar">
+    <button class="subfilter-chip" [class.active]="collFilter==='all'" (click)="collFilter='all'"><span class="chip-dot"></span> All (24)</button>
+    <button class="subfilter-chip chip-warning" [class.active]="collFilter==='pending'" (click)="collFilter='pending'"><span class="chip-dot"></span> Yet to Collect (6)</button>
+    <button class="subfilter-chip chip-danger" [class.active]="collFilter==='damaged'" (click)="collFilter='damaged'"><span class="chip-dot"></span> Damaged / Rejected (3)</button>
+    <button class="subfilter-chip chip-success" [class.active]="collFilter==='collected'" (click)="collFilter='collected'"><span class="chip-dot"></span> Collected (15)</button>
+  </div>
+
+  <div style="border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);padding:14px;background:var(--bg);">
+    <div *ngIf="collFilter==='all' || collFilter==='pending'" class="sc-group">
+      <div class="collect-card pending" *ngFor="let s of filterPending((samples$ | async) || [])">
+        <div class="collect-card-header">
+          <span class="sample-id">{{ s.id }}</span>
+          <span class="priority" [ngClass]="'priority-' + s.priority"><span class="priority-indicator" [ngClass]="'pi-' + s.priority"></span>{{ s.priority | uppercase }}</span>
+        </div>
+        <div class="collect-card-body">
+          <div class="collect-card-info">
+            <div class="cc-grid">
+              <div><div class="cc-label">Patient</div><div class="cc-value">{{ s.patient }}</div></div>
+              <div><div class="cc-label">Test(s)</div><div class="cc-value">{{ s.tests.join(', ') }}</div></div>
+            </div>
+          </div>
+          <div class="collect-card-actions">
+            <button class="act-btn primary" (click)="openCollect(s.orderId)">Sample Collect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog 
+  [(visible)]="showCollectDialog" 
+  [modal]="true" 
+  [draggable]="false" 
+  [resizable]="false"
+  [closable]="false"
+  styleClass="custom-collect-modal"
+  appendTo="body">
+  
+  <div class="cc-modal-container">
+    
+    <div class="cc-modal-header">
+      <div class="cc-modal-title">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="cc-icon"><path fill-rule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2H7z" clip-rule="evenodd"/></svg>
+        Collect Sample — {{ selectedOrder?.id }}
+      </div>
+      <button class="cc-modal-close" (click)="showCollectDialog = false">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </button>
+    </div>
+
+    <div class="cc-modal-body">
+      <div class="cc-patient-card">
+        <div class="cc-p-name">{{ selectedOrder?.patient }}</div>
+        <div class="cc-p-demo">{{ selectedOrder?.demo }}</div>
+      </div>
+
+      <div class="cc-table-wrapper">
+        <table class="cc-table">
+          <thead>
+            <tr>
+              <th style="width: 44px; text-align: center;">
+                <p-checkbox [binary]="true" [(ngModel)]="allTestsSelected" (onChange)="toggleAllTests()"></p-checkbox>
+              </th>
+              <th>TEST NAME</th>
+              <th>SAMPLE TYPE</th>
+              <th>VOLUME</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let test of selectedOrder?.tests">
+              <td style="text-align: center;">
+                <p-checkbox [binary]="true" [(ngModel)]="test.selected"></p-checkbox>
+              </td>
+              <td class="cc-td-bold">{{ test.name }}</td>
+              <td><span class="cc-sample-tag">{{ test.type }}</span></td>
+              <td class="cc-td-muted">{{ test.vol }}</td>
+              <td>
+                <div class="cc-status">
+                  <span class="cc-status-dot"></span>
+                  {{ test.status }}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cc-notes">
+        <label>COLLECTION NOTES / INSTRUCTIONS</label>
+        <textarea 
+          [(ngModel)]="collectionNotes" 
+          placeholder="Add any collection remarks (e.g., Fasting, difficult draw)...">
+        </textarea>
+      </div>
+    </div>
+
+    <div class="cc-modal-footer">
+      <button class="cc-btn-cancel" (click)="showCollectDialog = false">Cancel</button>
+      <button class="cc-btn-process" (click)="processCollection()">Process Collection</button>
+    </div>
+    
+  </div>
+</p-dialog>
